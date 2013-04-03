@@ -1,4 +1,4 @@
-# Mongoid::Filter
+# MongoidFilter
 
 TODO: Write a gem description
 
