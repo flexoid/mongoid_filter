@@ -6,7 +6,13 @@ module MongoidFilter
   extend ActiveSupport::Concern
 
   class FormObject
+    extend ActiveModel::Naming
+
     attr_reader :form_fields_struct
+
+    def self.model_name
+      ActiveModel::Name.new(self)
+    end
 
     def initialize(filter_params)
       @form_fields_struct = OpenStruct.new(filter_params)
