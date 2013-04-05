@@ -78,9 +78,11 @@ module MongoidFilter
         when :gt, :lt, :gte, :lte
           {field.send(operator) => value}
         when :from
-          {field.gte => value}
+          build_expression(field_name, :gte, value)
         when :to
-          {field.lte => value}
+          build_expression(field_name, :lte, value)
+        when :in
+          {field.in => value}
         else
           {}
         end

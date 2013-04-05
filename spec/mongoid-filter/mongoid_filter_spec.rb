@@ -116,6 +116,11 @@ describe MongoidFilter do
           to eq({'year' => {'$lte' => 2000}})
       end
 
+      it "in" do
+        expect(movie_klass.filter_by({year_in: [2000, 2001]}).selector).
+          to eq({'year' => {'$in' => [2000, 2001]}})
+      end
+
       it "combination of operators" do
         expect(movie_klass.filter_by(filter_params).selector).
           to eq({'year' => {'$gte' => 2005}, 'director' => 'Christopher Nolan'})
