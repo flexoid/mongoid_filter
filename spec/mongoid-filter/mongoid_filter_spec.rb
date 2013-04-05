@@ -17,13 +17,8 @@ describe MongoidFilter do
       expect(movie_klass.respond_to?(:filter_fields=)).to be_true
       expect(movie_klass.respond_to?(:special_filters)).to be_true
       expect(movie_klass.respond_to?(:special_filters=)).to be_true
-    end
-
-    it "exist in instance" do
-      expect(movie.respond_to?(:filter_fields)).to be_true
-      expect(movie.respond_to?(:filter_fields=)).to be_true
-      expect(movie.respond_to?(:special_filters)).to be_true
-      expect(movie.respond_to?(:special_filters=)).to be_true
+      expect(movie_klass.respond_to?(:filter_field_aliases)).to be_true
+      expect(movie_klass.respond_to?(:filter_field_aliases=)).to be_true
     end
   end
 
@@ -44,12 +39,16 @@ describe MongoidFilter do
     @special_filter_proc = ->(date) { Date.strptime(date, '%m/%d/%Y') }
     before(:each) do
       movie_klass.instance_eval do
-        special_filter :premiere_date, @special_filter_proc
+        special_filter :premiere_date, @special_filter_proc, field_name: :release_date
       end
     end
 
     it "adds filter proc to spefial filters" do
       expect(movie_klass.special_filters).to eq({premiere_date: @special_filter_proc})
+    end
+
+    it "adds field alias to aliases hash" do
+      expect(movie_klass.filter_field_aliases).to eq({premiere_date: :release_date})
     end
   end
 
@@ -92,7 +91,10 @@ describe MongoidFilter do
   describe "#filter_by" do
     before(:each) do
       movie_klass.instance_eval do
-        can_filter_by :director, :year
+        can_filter_by :director, :year, :premiere_date, :score
+        special_filter :score,
+          ->(score) { score * 10 },
+          field_name: :rating
       end
     end
 
@@ -121,6 +123,13 @@ describe MongoidFilter do
 
       it "unsupported operator" do
         expect(movie_klass.filter_by({year_greater: 2000}).selector).to eq({})
+      end
+    end
+
+    describe 'special filter' do
+      it 'with custom field name' do
+        expect(movie_klass.filter_by({score_gt: 10}).selector).
+          to eq({'rating' => {'$gt' => 100}})
       end
     end
   end

@@ -1,5 +1,6 @@
 require "mongoid-filter/version"
 require 'ostruct'
+require 'active_support/all'
 
 module MongoidFilter
   extend ActiveSupport::Concern
@@ -17,21 +18,32 @@ module MongoidFilter
   end
 
   included do
-    cattr_accessor :filter_fields do
-      []
-    end
-    cattr_accessor :special_filters do
-      {}
-    end
   end
 
   module ClassMethods
+    attr_writer :filter_fields, :special_filters, :filter_field_aliases
+
+    def filter_fields
+      @filter_fields ||= []
+    end
+
+    def special_filters
+      @special_filters ||= {}
+    end
+
+    def filter_field_aliases
+      @filter_aliases ||= {}
+    end
+
     def can_filter_by(*fields)
       self.filter_fields.concat(fields.flatten.map(&:to_sym))
     end
 
-    def special_filter(field, deserializing_proc)
+    def special_filter(field, deserializing_proc, options = {})
       self.special_filters.merge!(field => deserializing_proc)
+
+      field_name = options[:field_name]
+      self.filter_field_aliases.merge!(field => field_name)
     end
 
     def filter_by(filter_params)
@@ -58,16 +70,17 @@ module MongoidFilter
       end
 
       def build_expression(field_name, operator, value)
+        field = selector_field_name(field_name)
         value = deserialize_value(field_name, value)
         case operator
         when :eq
-          {field_name => value}
+          {field => value}
         when :gt, :lt, :gte, :lte
-          {field_name.send(operator) => value}
+          {field.send(operator) => value}
         when :from
-          {field_name.gte => value}
+          {field.gte => value}
         when :to
-          {field_name.lte => value}
+          {field.lte => value}
         else
           {}
         end
@@ -81,5 +94,8 @@ module MongoidFilter
         self.special_filters[field_name].try(:call, value) || value
       end
 
+      def selector_field_name(field_name)
+        filter_field_aliases[field_name] || field_name
+      end
   end
 end
