@@ -1,4 +1,4 @@
-require "mongoid-filter/version"
+require "mongoid_filter/version"
 require 'ostruct'
 require 'active_support/all'
 
