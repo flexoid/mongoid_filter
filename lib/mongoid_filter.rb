@@ -1,30 +1,11 @@
-require "mongoid-filter/version"
+require 'mongoid_filter/version'
+require 'mongoid_filter/form_object'
+
 require 'ostruct'
 require 'active_support/all'
 
 module MongoidFilter
   extend ActiveSupport::Concern
-
-  class FormObject
-    extend ActiveModel::Naming
-
-    attr_reader :form_fields_struct
-
-    def self.model_name
-      ActiveModel::Name.new(self)
-    end
-
-    def initialize(filter_params)
-      @form_fields_struct = OpenStruct.new(filter_params)
-    end
-
-    def method_missing(method, *args, &block)
-      @form_fields_struct.public_send(method, *args, &block)
-    end
-  end
-
-  included do
-  end
 
   module ClassMethods
     attr_writer :filter_fields, :special_filters, :filter_field_aliases

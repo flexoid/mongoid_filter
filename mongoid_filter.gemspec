@@ -1,10 +1,10 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'mongoid-filter/version'
+require 'mongoid_filter/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "mongoid-filter"
+  spec.name          = "mongoid_filter"
   spec.version       = MongoidFilter::VERSION
   spec.authors       = ["Egor Lynko"]
   spec.email         = ["flexoid@gmail.com"]
