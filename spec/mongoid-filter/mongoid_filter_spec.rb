@@ -121,8 +121,8 @@ describe MongoidFilter do
           to eq({'year' => {'$in' => [2000, 2001]}})
       end
 
-      it "cont" do
-        expect(movie_klass.filter_by({director_cont: 'Nolan'}).selector).
+      it "contains" do
+        expect(movie_klass.filter_by({director_contains: 'Nolan'}).selector).
           to eq({'director' => /.*Nolan.*/i})
       end
 
