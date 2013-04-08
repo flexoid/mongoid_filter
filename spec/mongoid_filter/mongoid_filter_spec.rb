@@ -121,6 +121,11 @@ describe MongoidFilter do
           to eq({'year' => {'$in' => [2000, 2001]}})
       end
 
+      it "cont" do
+        expect(movie_klass.filter_by({director_cont: 'Nolan'}).selector).
+          to eq({'director' => /.*Nolan.*/i})
+      end
+
       it "combination of operators" do
         expect(movie_klass.filter_by(filter_params).selector).
           to eq({'year' => {'$gte' => 2005}, 'director' => 'Christopher Nolan'})
