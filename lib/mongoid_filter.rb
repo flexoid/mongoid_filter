@@ -70,7 +70,7 @@ module MongoidFilter
           build_expression(field_name, :lte, value)
         when :in
           {field.in => value}
-        when :contains
+        when :cont
           regexp = Regexp.new(".*#{ Regexp.escape(value) }.*", "i")
           {field => regexp}
         else
